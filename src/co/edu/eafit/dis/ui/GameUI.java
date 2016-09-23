@@ -57,7 +57,7 @@ public class GameUI extends JFrame {
     @Override
     public void paint(Graphics g) {
         
-        gameOver();
+        // gameOver(); // Has the game ended?
         isItMyTurn(); putScoreResult(); 
         
         super.paint(g); // Overlap paint.
@@ -205,7 +205,6 @@ public class GameUI extends JFrame {
         
     }
     
-    
     // # of moves that a player has done. - Update database.
     private void doMove(boolean gameOwner, boolean square) {
         
@@ -222,64 +221,6 @@ public class GameUI extends JFrame {
             API.doPUT("games/" + gameID, json); // Store request status.
         }
     }
-    
-    // Squares count in the current game. - Following database registers.
-    private void countSquares(int x0, int y0, int x1, int y1) {
-        
-        if (lineExists(x0, y0, x0, y0 + 1) || 
-            lineExists(x0, y0 + 1, x0, y0)) {
-            if (lineExists(x0, y0 + 1, x1, y1 + 1) || 
-                    lineExists(x1, y1 + 1, x0, y0 + 1)) {
-                if (lineExists(x1, y1 + 1, x1, y1) || 
-                        lineExists(x1, y1, x1, y1 + 1)) {
-
-                    if (x1 > x0) squareCount++;
-                    else if (x0 > x1) squareCount++;
-                }
-            }
-        }
-        if (lineExists(x0, y0, x0, y0 - 1) || 
-                lineExists(x0, y0 - 1, x0, y0)) {
-            if (lineExists(x0, y0 - 1, x1, y1 - 1) || 
-                    lineExists(x1, y1 - 1, x0, y0 - 1)) {
-                if (lineExists(x1, y1 - 1, x1, y1) || 
-                        lineExists(x1, y1, x1, y1 - 1)) {
-
-                    if (x1 > x0) squareCount++;
-                    else if (x0 > x1) squareCount++;
-                }
-            }
-        }
-        if (lineExists(x0, y0, x0 + 1, y0) || 
-                lineExists(x0 + 1, y0, x0, y0)) {
-            if (lineExists(x0 + 1, y0, x1 + 1, y1) || 
-                    lineExists(x1 + 1, y1, x0 + 1, y0)) {
-                if (lineExists(x1 + 1, y1, x1, y1) || 
-                        lineExists(x1, y1, x1 + 1, y1)) {
-
-                    if (y1 > y0) squareCount++;
-                    else if (y0 > y1) squareCount++;
-                }
-            }
-        }
-        if (lineExists(x0, y0, x0 - 1, y0) || 
-                lineExists(x0 - 1, y0, x0, y0)) {
-            if (lineExists(x0 - 1, y0, x1 - 1, y1) || 
-                    lineExists(x1 - 1, y1, x0 - 1, y0)) {
-                if (lineExists(x1 - 1, y1, x1, y1) || 
-                        lineExists(x1, y1, x1 - 1, y1)) {
-
-                    if (y1 > y0) squareCount++;
-                    else if (y0 > y1) squareCount++;
-                }
-            }
-        }
-    }
-    
-    
-    
-    
-    
     
     private void insertNewSquare(int squareCount) {
         
