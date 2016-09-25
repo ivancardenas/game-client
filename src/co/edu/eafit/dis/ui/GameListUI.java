@@ -7,15 +7,11 @@ import co.edu.eafit.dis.threads.Games;
 import co.edu.eafit.dis.entities.User;
 import co.edu.eafit.dis.threads.Users;
 import co.edu.eafit.dis.threads.Invitations;
-import co.edu.eafit.dis.threads.Moves;
 
 import java.awt.Font;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.event.*;
-
-import java.util.HashMap;
-import java.util.Iterator;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -24,15 +20,15 @@ public class GameListUI extends JFrame {
 
     private final int width = 600, height = 576;
     
-    public static HashMap<Integer, GameUI> currentGames = new HashMap<>();
-    
     JLabel labelOnline, labelInvite, labelInvit, 
-            labelSent, labelReceiv, labelCurrent;
+            labelSent, labelReceiv;
+    
+    public static JLabel labelCurrent;
     
     static JScrollPane scrollUsers, scrollSentInvit, 
-            scrollReceivInvit, scrollCurrent;
+            scrollReceivInvit;
     static JPanel panelUsers, panelSentInvit, 
-            panelReceivInvit, panelCurrent;
+            panelReceivInvit;
     
     static JTextField textInvitation;
     
@@ -59,7 +55,6 @@ public class GameListUI extends JFrame {
         new Invitations("player").start(); // List receiv. invit.
         new Games("user").start(); // Background task.
         new Games("player").start(); // Backgrounds task.
-        new Moves().start();
 
         this.setSize(width, height);
         this.setResizable(false);
@@ -149,13 +144,8 @@ public class GameListUI extends JFrame {
                                         player + "' has accepted your game!");
                                 
                                 // Start new game (interface - UI).
-                                GameUI newGame = new GameUI(Integer
-                                        .parseInt(gameID[0]), player);
-                                    newGame.setVisible(true);
-                                
-                                currentGames.put(Integer
-                                        .parseInt(gameID[0]), newGame);
-                                listCurrentGames(); // List current games.
+                                new GameUI(Integer.parseInt(gameID[0]), 
+                                        player).setVisible(true);
                                 
                                 timer.stop(); // Stop retrieving information.
                                 
@@ -262,19 +252,18 @@ public class GameListUI extends JFrame {
         divide = new JSeparator(SwingConstants.HORIZONTAL);
         divide.setBounds(20, 375, 560, 10);
         
-        labelCurrent = new JLabel("C U R R E N T  G A M E S");
+        labelCurrent = new JLabel("C U R R E N T  G A M E : ");
         labelCurrent.setHorizontalAlignment(JLabel.CENTER);
         labelCurrent.setFont(new Font("Monospaced", Font.PLAIN, 18));
         labelCurrent.setBounds(20, 400, 560, 20);
         
-        panelCurrent = new JPanel();
-        panelCurrent.setBackground(color);
-        panelCurrent.setLayout(new BoxLayout(panelCurrent, BoxLayout.X_AXIS));
-        
-        scrollCurrent = new JScrollPane(panelCurrent);
-        scrollCurrent.setViewportView(panelCurrent);
-        scrollCurrent.setBounds(20, 430, 560, 100);
-        scrollCurrent.setBorder(null);
+        labelCurrent.addMouseListener(new MouseAdapter() {
+                    
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                
+            }
+        });
         
         this.add(labelOnline);
         this.add(scrollUsers);
@@ -290,7 +279,6 @@ public class GameListUI extends JFrame {
         this.add(scrollReceivInvit);
         this.add(divide);
         this.add(labelCurrent);
-        this.add(scrollCurrent);
     }
     
     public static void listOnlineUsers() {
@@ -382,11 +370,7 @@ public class GameListUI extends JFrame {
                                         player + "' has accepted your game!");
                                 
                                 // Start new game (interface - UI).
-                                GameUI newGame = new GameUI(game, player);
-                                    newGame.setVisible(true);
-                                
-                                currentGames.put(game, newGame);
-                                listCurrentGames(); // List current games.
+                                new GameUI(game, player).setVisible(true);
                                 
                                 timer.stop(); // Stop retrieving information.
                                 
@@ -462,11 +446,7 @@ public class GameListUI extends JFrame {
                                         player + "' has accepted your game!");
                                 
                                 // Start new game (interface - UI).
-                                GameUI newGame = new GameUI(game, player);
-                                    newGame.setVisible(true);
-                                
-                                currentGames.put(game, newGame);
-                                listCurrentGames(); // List current games.
+                                new GameUI(game, player).setVisible(true);
                                 
                                 timer.stop(); // Stop retrieving information.
                                 
@@ -489,45 +469,6 @@ public class GameListUI extends JFrame {
         
         panelReceivInvit.revalidate();
         panelReceivInvit.repaint();
-    }
-    
-    public static void listCurrentGames() {
-        
-        panelCurrent.removeAll(); // Remove old users.
-        
-        Iterator entries = currentGames.entrySet().iterator();
-        HashMap.Entry<Integer, GameUI> entry;
-        
-        JLabel current[] = new JLabel[currentGames.size()];
-        
-        for (int i = 0; i < current.length; i++) {
-            
-            entry = (HashMap.Entry) entries.next();
-            
-            current[i] = new JLabel("Game " + entry.getKey());
-            
-            current[i].setFont(new Font("Monospaced", Font.PLAIN, 12));
-            current[i].setCursor(new Cursor(Cursor.HAND_CURSOR));
-            current[i].setBorder(new EmptyBorder(10, 10, 5, 5));
-            
-            current[i].setName(String.valueOf(entry.getKey()));
-            
-            current[i].addMouseListener(new MouseAdapter() {
-                
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    
-                    GameUI openGame = (GameUI) currentGames.get(Integer
-                            .parseInt(e.getComponent().getName()));
-                    openGame.setVisible(true);
-                }
-            });
-            
-            panelCurrent.add(current[i]);
-        }
-        
-        panelCurrent.revalidate();
-        panelCurrent.repaint();
     }
     
     private static boolean startNewGame(int gameID, String scope) {

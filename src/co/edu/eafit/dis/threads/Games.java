@@ -74,13 +74,8 @@ public class Games extends Thread {
                         "{ \"game\": { \"status\": 1 } }");
                     
                     // Start new game (interface - UI).
-                    GameUI newGame = new GameUI(Integer
-                            .parseInt(gameID[i]), opponent[i]);
-                        newGame.setVisible(true);
-
-                    GameListUI.currentGames.put(Integer
-                            .parseInt(gameID[i]), newGame);
-                    GameListUI.listCurrentGames(); // List current games.
+                    new GameUI(Integer.parseInt(gameID[i]), 
+                            opponent[i]).setVisible(true);
                 
                 } else API.doPUT("games/".concat(gameID[i]), 
                         "{ \"game\": { \"status\": 0 } }");

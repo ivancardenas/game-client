@@ -4,22 +4,31 @@ package co.edu.eafit.dis.ui;
 import co.edu.eafit.dis.api.API;
 import co.edu.eafit.dis.entities.User;
 import co.edu.eafit.dis.json.JSON;
+
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 public class GameUI extends JFrame {
     
-    private final int gameID; // Game ID for the instance.
+    private  static int gameID; // Game ID for the instance.
     
     private final String player; // Player for the game.
     
@@ -34,19 +43,25 @@ public class GameUI extends JFrame {
     
     JLabel labelPUser, labelPPlayer, labelUser, labelPlayer;
     
-    int userq = 0, playerq = 0, userp, playerp;
+    static int userq = 0, playerq = 0, userp, playerp;
     
+    private HashMap<Integer, List<Integer>> 
+            oldPoints = new HashMap<>();
+    private HashMap<Integer, List<Integer>> 
+            newPoints = new HashMap<>();
+    
+    private Timer timer;
     
     private final boolean gameOwner;
     
-    private int flag = 0, flagn = 0;
+    private static int flag = 0, flagn = 0;
     
     private JLabel dotsArray[][];
     
     
     public GameUI(int gameID, String player) {
         
-        this.gameID = gameID;
+        GameUI.gameID = gameID;
         this.player = player;
         
         gameOwner = setGameOwner();
@@ -78,20 +93,73 @@ public class GameUI extends JFrame {
         }
     }
     
+    public boolean isGamePlayerOpen(String player) {
+        
+        String response = API.doGET("games/" + gameID);
+        String status[] = JSON.getParameter(response, "status");
+        
+        return status[0].equals("0");
+    }
+    
     private void createGameUI() {
+        
+        oldPoints = new HashMap<>(); 
+        fillPoints(oldPoints);
+        
+        timer = new Timer(1000, (ActionEvent e) -> {
+            
+            newPoints = new HashMap<>(); 
+            fillPoints(newPoints);
+            
+            if (newMove(gameID)) {
+
+                oldPoints = new HashMap<>(newPoints);
+
+                repaint();
+            }
+
+            fillPoints(oldPoints);
+            
+            if (isGamePlayerOpen(player)) {
+                
+                JOptionPane.showMessageDialog(null, "The game has ended!");
+                
+                timer.stop();
+                
+                dispose();
+            }
+            
+        }); timer.start();
         
         this.setSize(width, height);
         this.setResizable(false);
         this.setLayout(null);
 
         this.setLocationRelativeTo(null);
-        this.setDefaultCloseOperation(1); // Hide.
+        this.setDefaultCloseOperation(0);
         this.getContentPane().setBackground(Color.WHITE);
+        
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            
+            @Override
+            public void windowClosing(WindowEvent e) {
+                
+                if (JOptionPane.showConfirmDialog(null, 
+                        "Do you want to leave the game?", "", 
+                        JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    
+                    API.doPUT("games/" + gameID, 
+                            " { \"game\": { \"status\": 0 } } ");
+                    dispose();
+                    
+                }
+            }
+        });
         
         
         gamePanel.setBounds(30, 30, this.getWidth() - 60,
                 this.getWidth() - 60);
-        //gamePanel.setBackground(Color.WHITE);
+        gamePanel.setBackground(Color.WHITE);
         gamePanel.setLayout(null);
         
         dotsArray = paintDots();
@@ -526,12 +594,6 @@ public class GameUI extends JFrame {
         return owner[0].equals(User.getUser());
     }
     
-    private void firstMoveTurn() {
-        
-        if (gameOwner) JOptionPane.showMessageDialog(null, "It's your turn!");
-        else JOptionPane.showMessageDialog(null, "It's " + player + "'s turn!");
-    }
-    
     private int[] getDrawnLines() {
         
         String response = API.doGET("points?game=" + gameID);
@@ -569,5 +631,62 @@ public class GameUI extends JFrame {
     
     private void setPointY(int pointY) {
         this.pointY = pointY;
+    }
+    
+    private void fillPoints(HashMap<Integer, List<Integer>> points) {
+        
+        ArrayList<Integer> movesPerGame = new ArrayList<>();
+
+        String moves, countX0[], 
+            countY0[], countX1[], countY1[];
+        
+        moves = API.doGET("points?game_id=".
+                concat(String.valueOf(gameID)));
+
+        countX0 = JSON.getParameter(moves, "x0");
+        countY0 = JSON.getParameter(moves, "y0");
+        countX1 = JSON.getParameter(moves, "x1");
+        countY1 = JSON.getParameter(moves, "y1");
+
+        for (int j = 0; j < countX0.length; j++) {
+
+            movesPerGame.add(Integer.parseInt(countX0[j]));
+            movesPerGame.add(Integer.parseInt(countY0[j]));
+            movesPerGame.add(Integer.parseInt(countX1[j]));
+            movesPerGame.add(Integer.parseInt(countY1[j]));
+        }
+
+        points.put(gameID, movesPerGame);
+        
+    }
+    
+    private boolean newMove(int gameID) {
+        
+        Iterator<HashMap.Entry<Integer, List<Integer>>> entries;
+        HashMap.Entry<Integer, List<Integer>> entry;
+        
+        entries = oldPoints.entrySet().iterator();
+        
+        int oldCount = 0, newCount = 0;
+        
+        while (entries.hasNext()) {
+            
+            entry = entries.next();
+            
+            if (entry.getKey().equals(gameID)) 
+                oldCount = entry.getValue().size();
+        }
+        
+        entries = newPoints.entrySet().iterator();
+
+        while (entries.hasNext()) {
+            
+            entry = entries.next();
+
+            if (entry.getKey().equals(gameID)) 
+                newCount = entry.getValue().size();
+        }
+        
+        return oldCount < newCount;
     }
 }
