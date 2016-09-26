@@ -56,6 +56,7 @@ public class GameListUI extends JFrame {
         new Games("user").start(); // Background task.
         new Games("player").start(); // Backgrounds task.
 
+        this.setTitle("Dots and Boxes - Start Game");
         this.setSize(width, height);
         this.setResizable(false);
         this.setLayout(null);

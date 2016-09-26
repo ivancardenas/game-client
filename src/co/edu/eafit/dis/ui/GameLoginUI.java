@@ -2,7 +2,6 @@
 package co.edu.eafit.dis.ui;
 
 import co.edu.eafit.dis.entities.User;
-import co.edu.eafit.dis.threads.Users;
 
 import java.awt.Font;
 import java.awt.Color;

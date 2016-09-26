@@ -35,6 +35,7 @@ public class GameRegisterUI extends JFrame {
     
     private void createGameRegisterUI() {
         
+        this.setTitle("Registration");
         this.setSize(width, height);
         this.setResizable(false);
         this.setLayout(null);

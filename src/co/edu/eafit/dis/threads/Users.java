@@ -6,7 +6,6 @@ import co.edu.eafit.dis.json.JSON;
 import co.edu.eafit.dis.ui.GameListUI;
 
 import java.util.HashMap;
-import java.util.Iterator;
 
 public class Users extends Thread {
     
