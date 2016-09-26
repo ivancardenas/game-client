@@ -5,26 +5,27 @@ import co.edu.eafit.dis.api.API;
 import co.edu.eafit.dis.entities.User;
 import co.edu.eafit.dis.json.JSON;
 
+import java.awt.Font;
+import java.awt.Point;
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
+
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
+import java.util.ArrayList;
 
+import javax.swing.Timer;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.Timer;
+import javax.swing.JOptionPane;
 
 public class GameUI extends JFrame {
     
