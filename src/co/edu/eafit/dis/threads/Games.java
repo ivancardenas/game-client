@@ -65,7 +65,7 @@ public class Games extends Thread {
                 
                 waitingGames.put(gameID[i], opponent[i]);
                 
-                int answer = JOptionPane.showConfirmDialog(null, "Play with '"
+                int answer = JOptionPane.showConfirmDialog(GameListUI.labelCurrent.getParent(), "Play with '"
                         + opponent[i] + "' now?", "", JOptionPane.YES_NO_OPTION);
                 
                 if (answer == JOptionPane.YES_OPTION) {
@@ -76,6 +76,10 @@ public class Games extends Thread {
                     // Start new game (interface - UI).
                     new GameUI(Integer.parseInt(gameID[i]), 
                             opponent[i]).setVisible(true);
+                    
+                    GameListUI.butInvitation.setEnabled(false);
+                    GameListUI.panelReceivInvit.removeAll();
+                    GameListUI.panelSentInvit.removeAll();
                 
                 } else API.doPUT("games/".concat(gameID[i]), 
                         "{ \"game\": { \"status\": 0 } }");

@@ -18,7 +18,7 @@ import javax.swing.border.*;
 
 public class GameListUI extends JFrame {
 
-    private final int width = 600, height = 576;
+    private final int width = 600, height = 397;
     
     JLabel labelOnline, labelInvite, labelInvit, 
             labelSent, labelReceiv;
@@ -27,14 +27,14 @@ public class GameListUI extends JFrame {
     
     static JScrollPane scrollUsers, scrollSentInvit, 
             scrollReceivInvit;
-    static JPanel panelUsers, panelSentInvit, 
+    public static JPanel panelUsers, panelSentInvit, 
             panelReceivInvit;
     
-    static JTextField textInvitation;
+    public static JTextField textInvitation;
     
     JSeparator separator, divide;
     
-    JButton butInvitation, butExit;
+    public static JButton butInvitation, butExit;
     
     Border emptyBorder = BorderFactory.
             createLineBorder(Color.GRAY);
@@ -131,7 +131,7 @@ public class GameListUI extends JFrame {
                         textInvitation.setText("");
                         textInvitation.requestFocus();
                         
-                        JOptionPane.showMessageDialog(null, "Waiting for answer!");
+                        JOptionPane.showMessageDialog(GameListUI.labelCurrent.getParent(), "Waiting for answer!");
                         
                         timer = new Timer(1000, (ActionEvent a) -> {
                             
@@ -140,18 +140,22 @@ public class GameListUI extends JFrame {
                             
                             if (status[0].equals("1")) {
                                 
-                                JOptionPane.showMessageDialog(null, "'"+
+                                JOptionPane.showMessageDialog(GameListUI.labelCurrent.getParent(), "'"+
                                         player + "' has accepted your game!");
                                 
                                 // Start new game (interface - UI).
                                 new GameUI(Integer.parseInt(gameID[0]), 
                                         player).setVisible(true);
                                 
+                                butInvitation.setEnabled(false);
+                                panelReceivInvit.removeAll();
+                                panelSentInvit.removeAll();
+                                
                                 timer.stop(); // Stop retrieving information.
                                 
                             } else if (status[0].equals("0")) {
                                 
-                                JOptionPane.showMessageDialog(null, "'"+
+                                JOptionPane.showMessageDialog(GameListUI.labelCurrent.getParent(), "'"+
                                         player + "' has rejected your game!");
                                 
                                 timer.stop(); // Stop retrieving information.
@@ -174,20 +178,22 @@ public class GameListUI extends JFrame {
                         textInvitation.requestFocus();
                             
                         // The user is not online.
-                        JOptionPane.showMessageDialog(null, 
+                        JOptionPane.showMessageDialog(this, 
                                 "You invited '" + player + "' to a new game!");
+                        
+                        listSentInvitations();
                     }
                 
                 } else {
                     
                     textInvitation.setText(""); 
                     textInvitation.requestFocus();
-                    JOptionPane.showMessageDialog(null, 
+                    JOptionPane.showMessageDialog(this, 
                             "The user does not exist!");
                 }
                 
             } else {
-                JOptionPane.showMessageDialog(null, 
+                JOptionPane.showMessageDialog(this, 
                         "Complete the field above!");
                 textInvitation.setText("");
                 textInvitation.requestFocus();
@@ -252,18 +258,7 @@ public class GameListUI extends JFrame {
         divide = new JSeparator(SwingConstants.HORIZONTAL);
         divide.setBounds(20, 375, 560, 10);
         
-        labelCurrent = new JLabel("C U R R E N T  G A M E : ");
-        labelCurrent.setHorizontalAlignment(JLabel.CENTER);
-        labelCurrent.setFont(new Font("Monospaced", Font.PLAIN, 18));
-        labelCurrent.setBounds(20, 400, 560, 20);
-        
-        labelCurrent.addMouseListener(new MouseAdapter() {
-                    
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                
-            }
-        });
+        labelCurrent = new JLabel();
         
         this.add(labelOnline);
         this.add(scrollUsers);
@@ -303,14 +298,17 @@ public class GameListUI extends JFrame {
             
             labelUsers[i].setName(onlineUser[i]); // Add listener.
             
+            
             labelUsers[i].addMouseListener(new MouseAdapter() {
-                
+
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    
+
                     textInvitation.setText(e.getComponent().getName());
                 }
             });
+            
+            
             
             panelUsers.add(labelUsers[i]);
         }
@@ -342,47 +340,51 @@ public class GameListUI extends JFrame {
                     .toString(games[i]) + "," + players[i]);
             
             labelInvitations[i].addMouseListener(new MouseAdapter() {
-                
+
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    
+
                     String props = e.getComponent().getName();
-                    
+
                     String properties[] = props.split(",");
-                    
+
                     int game = Integer.parseInt(properties[0]);
                     String player = properties[1];
-                    
+
                     if (startNewGame(game, "user")) {
-                        
+
                         API.doPUT("games/"+game, " { \"game\": { \"status\": 4 } } ");
-                        
-                        JOptionPane.showMessageDialog(null, "Waiting for answer!");
-                        
+
+                        JOptionPane.showMessageDialog(GameListUI.labelCurrent.getParent(), "Waiting for answer!");
+
                         timer = new Timer(1000, (ActionEvent a) -> {
-                            
+
                             String get = API.doGET("games/"+game);
                             String status[] = JSON.getParameter(get, "status");
-                            
+
                             if (status[0].equals("1")) {
-                                
-                                JOptionPane.showMessageDialog(null, "'"+
+
+                                JOptionPane.showMessageDialog(GameListUI.labelCurrent.getParent(), "'"+
                                         player + "' has accepted your game!");
-                                
+
                                 // Start new game (interface - UI).
                                 new GameUI(game, player).setVisible(true);
-                                
+
+                                butInvitation.setEnabled(false);
+                                panelReceivInvit.removeAll();
+                                panelSentInvit.removeAll();
+
                                 timer.stop(); // Stop retrieving information.
-                                
+
                             } else if (status[0].equals("0")) {
-                                
-                                JOptionPane.showMessageDialog(null, "'"+
+
+                                JOptionPane.showMessageDialog(GameListUI.getFrames()[0], "'"+
                                         player + "' has rejected your game!");
-                                
+
                                 timer.stop(); // Stop retrieving information.
                             }
                         });
-                        
+
                         timer.start();
                     }
                 }
@@ -417,52 +419,58 @@ public class GameListUI extends JFrame {
             labelInvitations[i].setName(Integer
                     .toString(games[i]) + "," + players[i]);
             
+            
             labelInvitations[i].addMouseListener(new MouseAdapter() {
-                
+
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    
+
                     String props = e.getComponent().getName();
-                    
+
                     String properties[] = props.split(",");
-                    
+
                     int game = Integer.parseInt(properties[0]);
                     String player = properties[1];
-                    
+
                     if (startNewGame(game, "player")) {
-                        
+
                         API.doPUT("games/"+game, " { \"game\": { \"status\": 3 } } ");
-                        
-                        JOptionPane.showMessageDialog(null, "Waiting for answer!");
-                        
+
+                        JOptionPane.showMessageDialog(GameListUI.labelCurrent.getParent(), "Waiting for answer!");
+
                         timer = new Timer(1000, (ActionEvent a) -> {
-                            
+
                             String get = API.doGET("games/"+game);
                             String status[] = JSON.getParameter(get, "status");
-                            
+
                             if (status[0].equals("1")) {
-                                
-                                JOptionPane.showMessageDialog(null, "'"+
+
+                                JOptionPane.showMessageDialog(GameListUI.labelCurrent.getParent(), "'"+
                                         player + "' has accepted your game!");
-                                
+
                                 // Start new game (interface - UI).
                                 new GameUI(game, player).setVisible(true);
-                                
+
+                                butInvitation.setEnabled(false);
+                                panelReceivInvit.removeAll();
+                                panelSentInvit.removeAll();
+
                                 timer.stop(); // Stop retrieving information.
-                                
+
                             } else if (status[0].equals("0")) {
-                                
-                                JOptionPane.showMessageDialog(null, "'"+
+
+                                JOptionPane.showMessageDialog(GameListUI.labelCurrent.getParent(), "'"+
                                         player + "' has rejected your game!");
-                                
+
                                 timer.stop(); // Stop retrieving information.
                             }
                         });
-                        
+
                         timer.start();
                     }
                 }
             });
+            
             
             panelReceivInvit.add(labelInvitations[i]);
         }
@@ -482,7 +490,7 @@ public class GameListUI extends JFrame {
                 String user[] = JSON.getParameter(response, "player");
                 
                 if (User.online(user[0])) return true;
-                else JOptionPane.showMessageDialog(null, 
+                else JOptionPane.showMessageDialog(GameListUI.labelCurrent.getParent(), 
                         "The user is not online!");
                 
                 break;
@@ -492,7 +500,7 @@ public class GameListUI extends JFrame {
                 String player[] = JSON.getParameter(response, "user_id");
                 
                 if (User.online(player[0])) return true;
-                else JOptionPane.showMessageDialog(null, 
+                else JOptionPane.showMessageDialog(GameListUI.labelCurrent.getParent(), 
                         "The user is not online!");
                 
                 break;

@@ -55,7 +55,7 @@ public class GameUI extends JFrame {
     
     private final boolean gameOwner;
     
-    private static int flag = 0, flagn = 0;
+    static int flag = 0, flagn = 0;
     
     private JLabel dotsArray[][];
     
@@ -66,6 +66,9 @@ public class GameUI extends JFrame {
         this.player = player;
         
         gameOwner = setGameOwner();
+        
+        GameListUI.labelCurrent.setText("C U R R E N T  G A M E : " 
+                + player.toUpperCase());
         
         createGameUI();
     }
@@ -104,6 +107,8 @@ public class GameUI extends JFrame {
     
     private void createGameUI() {
         
+        flag = 0; flagn = 0;
+        
         oldPoints = new HashMap<>(); 
         fillPoints(oldPoints);
         
@@ -123,11 +128,16 @@ public class GameUI extends JFrame {
             
             if (isGamePlayerOpen(player)) {
                 
-                JOptionPane.showMessageDialog(null, "The game has ended!");
+                dispose();
+                
+                JOptionPane.showMessageDialog(GameListUI.
+                        labelCurrent.getParent(), "The game has ended!");
+                
+                GameListUI.butInvitation.setEnabled(true);
+                GameListUI.listReceivedInvitations();
+                GameListUI.listSentInvitations();
                 
                 timer.stop();
-                
-                dispose();
             }
             
         }); timer.start();
@@ -145,7 +155,7 @@ public class GameUI extends JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 
-                if (JOptionPane.showConfirmDialog(null, 
+                if (JOptionPane.showConfirmDialog(GameUI.gamePanel, 
                         "Do you want to leave the game?", "", 
                         JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                     
@@ -211,7 +221,7 @@ public class GameUI extends JFrame {
                                 repaint();
                                 
                             } else JOptionPane.showMessageDialog(
-                                        null, "Invalid movement!");
+                                        GameUI.gamePanel, "Invalid movement!");
                             
                             actualPoint = null; finalPoint = null;
                             
@@ -448,7 +458,7 @@ public class GameUI extends JFrame {
                 gamePanel.setBackground(Color.WHITE);
                 
                 if (flag++ == 0) JOptionPane
-                        .showMessageDialog(null, "It's your turn!");
+                        .showMessageDialog(this, "It's your turn!");
                 
             } else {
                 
@@ -457,7 +467,7 @@ public class GameUI extends JFrame {
                 gamePanel.setBackground(Color.GRAY);
                 
                 if (flagn++ == 0) JOptionPane
-                        .showMessageDialog(null, player + "'s turn!");
+                        .showMessageDialog(this, player + "'s turn!");
             }
             
             if (userTurn > playerTurn) { 
@@ -467,7 +477,7 @@ public class GameUI extends JFrame {
                 gamePanel.setBackground(Color.GRAY);
                 
                 if (flagn++ == 0) JOptionPane
-                        .showMessageDialog(null, player + "'s turn!");
+                        .showMessageDialog(this, player + "'s turn!");
             }
             
         } else {
@@ -480,7 +490,7 @@ public class GameUI extends JFrame {
                 gamePanel.setBackground(Color.GRAY);
                 
                 if (flagn++ == 0) JOptionPane
-                        .showMessageDialog(null, player + "'s turn!");
+                        .showMessageDialog(this, player + "'s turn!");
                 
             } else {
                 
@@ -489,7 +499,7 @@ public class GameUI extends JFrame {
                 gamePanel.setBackground(Color.WHITE);
                 
                 if (flag++ == 0) JOptionPane
-                        .showMessageDialog(null, "It's your turn!");
+                        .showMessageDialog(this, "It's your turn!");
             }
             
             if (userTurn > playerTurn) {
@@ -499,7 +509,7 @@ public class GameUI extends JFrame {
                 gamePanel.setBackground(Color.WHITE);
                 
                 if (flag++ == 0) JOptionPane
-                        .showMessageDialog(null, "It's your turn!");
+                        .showMessageDialog(this, "It's your turn!");
             }
         }
     }
@@ -531,22 +541,22 @@ public class GameUI extends JFrame {
         if ((userq + playerq) == 25) {
             
             if (userq > playerq && gameOwner) {
-                JOptionPane.showMessageDialog(null, 
+                JOptionPane.showMessageDialog(this, 
                         "YOU WON!!!\nGamer over.");
                 //exitGame(gameID); setWinner(user);
                 
             } else if (userq < playerq && gameOwner) {
-                JOptionPane.showMessageDialog(null, 
+                JOptionPane.showMessageDialog(this, 
                         "YOU LOSE!!!\nGamer over.");
                 //exitGame(gameID); setWinner(user);
                 
             } else if (userq < playerq && !gameOwner) {
-                JOptionPane.showMessageDialog(null, 
+                JOptionPane.showMessageDialog(this, 
                         "YOU WON!!!\nGamer over.");
                 //exitGame(gameID); setWinner(player);
                 
             } else if (userq > playerq && !gameOwner) {
-                JOptionPane.showMessageDialog(null, 
+                JOptionPane.showMessageDialog(this, 
                         "YOU LOSE!!!\nGamer over.");
                 //exitGame(gameID); setWinner(player);
             }
