@@ -59,7 +59,7 @@ public class GameUI extends JFrame {
     static int flag = 0, flagn = 0;
 
     private JLabel dotsArray[][];
-
+    
     public GameUI(int gameID, String player) {
 
         GameUI.gameID = gameID;
@@ -191,7 +191,7 @@ public class GameUI extends JFrame {
 
                     @Override
                     public void mouseClicked(MouseEvent e) {
-
+                        
                         int dis = (gamePanel.getWidth() - 8) / (cols);
 
                         if (actualPoint != null) {
@@ -201,7 +201,9 @@ public class GameUI extends JFrame {
 
                             finalPoint = new Point(getPointX(), getPointY());
 
-                            if (validateLine(actualPoint, finalPoint)) { // Is the line correct?
+                            if (validateLine(actualPoint, finalPoint)) {
+                                
+                                long startTime = System.currentTimeMillis();
 
                                 int x0 = (int) actualPoint.getX();
                                 int y0 = (int) actualPoint.getY();
@@ -217,11 +219,10 @@ public class GameUI extends JFrame {
                                     insertNewSquare(squareCount); // I did one.
                                 }
 
-                                flag = 0;
-                                flagn = 0;
-
-                                //isItMyTurn();
-                                repaint();
+                                flag = 0; flagn = 0; repaint();
+                                
+                                long elapsedTime = System.currentTimeMillis() - startTime;
+                                System.out.println("Gaming response time: " + elapsedTime + "ms");
 
                             } else {
                                 JOptionPane.showMessageDialog(
@@ -238,6 +239,8 @@ public class GameUI extends JFrame {
 
                             actualPoint = new Point(getPointX(), getPointY());
                         }
+                        
+                        
                     }
                 });
 

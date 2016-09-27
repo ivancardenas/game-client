@@ -7,7 +7,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 public class API {
 
-    final private static String URL = setURL();
+    private static String URL;
 
     private static HttpResponse<String> responseGET;
     private static HttpResponse<String> responsePOST;
@@ -73,8 +73,8 @@ public class API {
         return responsePOST.getBody();
     }
 
-    private static String setURL() {
-        return "http://localhost:3000";
+    public static void setURL(String URL) {
+        API.URL = URL; // Return connection.
     }
     
     

@@ -1,27 +1,17 @@
 
 package co.edu.eafit.dis;
 
-import co.edu.eafit.dis.entities.User;
-import co.edu.eafit.dis.threads.Games;
-import co.edu.eafit.dis.threads.Invitations;
-import co.edu.eafit.dis.threads.Users;
-import co.edu.eafit.dis.ui.*;
+import co.edu.eafit.dis.api.API;
+import co.edu.eafit.dis.ui.GameLoginUI;
 
 public class DotsAndBoxes {
     
     public static void main(String[] args) {
         
+        if (args.length == 0)
+            API.setURL("http://10.131.137.108/");
+        else API.setURL(args[0]); // Receive args.
+        
         new GameLoginUI().setVisible(true);
-        // new GameRegisterUI().setVisible(true);
-        //new GameListUI().setVisible(true);
-        
-        //User.setUser("icardena");
-        //new GameListUI().setVisible(true);
-        
-        
-        //User.setUser("icardena");
-        //new Invitations().start();
-        
-        //new GameUI(1).setVisible(true);
     }
 }
