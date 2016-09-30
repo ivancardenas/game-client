@@ -460,7 +460,7 @@ public class GameUI extends JFrame {
     // Does the line exist into database registers?
     private boolean lineExists(int x0, int y0, int x1, int y1) {
 
-        String response = API.doGET("points?game_id=" + gameID);
+        String response = API.doGET("points?game=" + gameID);
 
         String intX0[] = JSON.getParameter(response, "x0");
         String intY0[] = JSON.getParameter(response, "y0");
@@ -691,7 +691,7 @@ public class GameUI extends JFrame {
 
     private int[] getDrawnLines() {
 
-        String response = API.doGET("points?game_id=" + gameID);
+        String response = API.doGET("points?game=" + gameID);
 
         String strX0[] = JSON.getParameter(response, "x0");
         String strY0[] = JSON.getParameter(response, "y0");
@@ -734,7 +734,7 @@ public class GameUI extends JFrame {
         String moves, countX0[],
                 countY0[], countX1[], countY1[];
 
-        moves = API.doGET("points?game_id=".
+        moves = API.doGET("points?game=".
                 concat(String.valueOf(gameID)));
 
         countX0 = JSON.getParameter(moves, "x0");
